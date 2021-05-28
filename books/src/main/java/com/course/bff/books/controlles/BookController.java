@@ -4,33 +4,12 @@ import com.course.bff.books.models.Book;
 import com.course.bff.books.requests.CreateBookCommand;
 import com.course.bff.books.responses.BookResponse;
 import com.course.bff.books.services.BookService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.asynchttpclient.Dsl;
-import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.RequestBuilder;
-import org.asynchttpclient.Response;
-import org.asynchttpclient.util.HttpConstants;
+import com.course.bff.books.services.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/books")
@@ -38,14 +17,11 @@ public class BookController {
 
     private final static Logger logger = LoggerFactory.getLogger(BookController.class);
     private final BookService bookService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
-    @Value("${redis.topic}")
-    private String redisTopic;
-
-    public BookController(BookService bookService, RedisTemplate<String, Object> redisTemplate) {
+    public BookController(BookService bookService, RedisService redisService) {
         this.bookService = bookService;
-        this.redisTemplate = redisTemplate;
+        this.redisService = redisService;
     }
 
     @GetMapping()
@@ -56,8 +32,8 @@ public class BookController {
             BookResponse bookResponse = createBookResponse(book);
             bookResponses.add(bookResponse);
         });
-
-        return bookResponses;
+        throw new RuntimeException("Book isn't found");
+//        return bookResponses;
     }
 
     @GetMapping("/{id}")
@@ -77,17 +53,8 @@ public class BookController {
         logger.info("Create books");
         Book book = this.bookService.create(createBookCommand);
         BookResponse authorResponse = createBookResponse(book);
-        this.sendPushNotification(authorResponse);
+        redisService.sendPushNotification(authorResponse);
         return authorResponse;
-    }
-
-    private void sendPushNotification(BookResponse bookResponse) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            redisTemplate.convertAndSend(redisTopic, gson.toJson(bookResponse));
-        } catch (Exception e) {
-            logger.error("Push Notification Error", e);
-        }
     }
 
     private BookResponse createBookResponse(Book book) {

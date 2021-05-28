@@ -1,9 +1,12 @@
 package com.lohika.course.bfffrontend.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/details")
+@Slf4j
 public class DetailsAgregate {
 
     @Value("${books.url}")
@@ -19,6 +23,9 @@ public class DetailsAgregate {
 
     @Value("${authors.url}")
     private String authorsUrl;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public Mono<Map> getBooksAndAuthors() {
@@ -31,6 +38,9 @@ public class DetailsAgregate {
                 .builder()
                 .baseUrl(booksUrl)
                 .build();
+
+        restTemplate.getForEntity(authorsUrl, Object.class);
+        restTemplate.getForEntity(booksUrl, Object.class);
 
         Mono<Object> authors = authorClient.get().retrieve().bodyToMono(Object.class);
         Mono<Object> books = bookClient.get().retrieve().bodyToMono(Object.class);
