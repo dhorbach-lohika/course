@@ -91,12 +91,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.opentracing.contrib</groupId>
-            <artifactId>opentracing-redis-spring-data</artifactId>
-            <version>0.1.16</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
             <version>2.1.7.RELEASE</version>
@@ -107,21 +101,6 @@
             <artifactId>spring-cloud-starter-zipkin</artifactId>
             <version>2.1.7.RELEASE</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.opentracing.brave/brave-opentracing -->
-        <dependency>
-            <groupId>io.opentracing.brave</groupId>
-            <artifactId>brave-opentracing</artifactId>
-            <version>0.35.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-tracerresolver -->
-        <dependency>
-            <groupId>io.opentracing.contrib</groupId>
-            <artifactId>opentracing-tracerresolver</artifactId>
-            <version>0.1.8</version>
-        </dependency>
-
 
     </dependencies>
 

@@ -1,10 +1,12 @@
 package com.lohika.course.bfffrontend.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -22,9 +24,11 @@ public class DetailsAgregate {
     @Value("${authors.url}")
     private String authorsUrl;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @GetMapping
     public Mono<Map> getBooksAndAuthors() {
-        log.info("getBooksAndAuthors triggered");
         WebClient authorClient = WebClient
                 .builder()
                 .baseUrl(authorsUrl)
@@ -34,6 +38,9 @@ public class DetailsAgregate {
                 .builder()
                 .baseUrl(booksUrl)
                 .build();
+
+        restTemplate.getForEntity(authorsUrl, Object.class);
+        restTemplate.getForEntity(booksUrl, Object.class);
 
         Mono<Object> authors = authorClient.get().retrieve().bodyToMono(Object.class);
         Mono<Object> books = bookClient.get().retrieve().bodyToMono(Object.class);
