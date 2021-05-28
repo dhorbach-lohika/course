@@ -1,5 +1,6 @@
 package com.lohika.course.bfffrontend.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/details")
+@Slf4j
 public class DetailsAgregate {
 
     @Value("${books.url}")
@@ -22,6 +24,7 @@ public class DetailsAgregate {
 
     @GetMapping
     public Mono<Map> getBooksAndAuthors() {
+        log.info("getBooksAndAuthors triggered");
         WebClient authorClient = WebClient
                 .builder()
                 .baseUrl(authorsUrl)
