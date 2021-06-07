@@ -32,8 +32,7 @@ public class BookController {
             BookResponse bookResponse = createBookResponse(book);
             bookResponses.add(bookResponse);
         });
-        throw new RuntimeException("Book isn't found");
-//        return bookResponses;
+        return bookResponses;
     }
 
     @GetMapping("/{id}")
