@@ -39,6 +39,7 @@ public class DetailsAgregate {
                 .baseUrl(booksUrl)
                 .build();
 
+        //to trigger tracing
         restTemplate.getForEntity(authorsUrl, Object.class);
         restTemplate.getForEntity(booksUrl, Object.class);
 
